@@ -58,7 +58,8 @@ module Datadog
         ),
         span_sampler: Sampling::Span::Sampler.new,
         tags: {},
-        writer: Writer.new
+        writer: Writer.new,
+        after_finish: proc {}
       )
         @trace_flush = trace_flush
         @default_service = default_service
@@ -68,6 +69,7 @@ module Datadog
         @span_sampler = span_sampler
         @tags = tags
         @writer = writer
+        @after_finish = after_finish
       end
 
       # Return a {Datadog::Tracing::SpanOperation span_op} and {Datadog::Tracing::TraceOperation trace_op}
@@ -376,7 +378,9 @@ module Datadog
       )
         trace = _trace || start_trace(continue_from: continue_from)
 
-        events = SpanOperation::Events.new
+        events = SpanOperation::Events.new.tap do |e|
+          e.after_finish.subscribe(&@after_finish)
+        end
 
         if block
           # Ignore start time if a block has been given

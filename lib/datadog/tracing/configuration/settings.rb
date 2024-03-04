@@ -19,6 +19,13 @@ module Datadog
             # Tracer specific configurations.
             # @public_api
             settings :tracing do
+              settings :span do
+                option :after_finish do |o|
+                  o.type :proc
+                  o.default_proc {  }
+                end
+              end
+
               # Legacy [App Analytics](https://docs.datadoghq.com/tracing/legacy_app_analytics/) configuration.
               #
               # @configure_with {Datadog::Tracing}

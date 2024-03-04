@@ -54,6 +54,7 @@ module Datadog
           span_sampler: build_span_sampler(settings),
           writer: writer,
           tags: build_tracer_tags(settings),
+          after_finish: settings.tracing.span.after_finish,
         )
       end
 

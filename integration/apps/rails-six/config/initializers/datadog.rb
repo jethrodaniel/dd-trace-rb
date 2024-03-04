@@ -11,6 +11,13 @@ Datadog.configure do |c|
   if Datadog::DemoEnv.feature?('tracing')
     c.tracing.analytics.enabled = true if Datadog::DemoEnv.feature?('analytics')
 
+    # c.tracing.span.after_finish = proc do |span|
+    #   if span.service != Datadog.configuration.service && !span.has_tag?('_dd.base_service')
+    #     span.set_tag('_dd.base_service', Datadog.configuration.service)
+    #     span.set_tag('tagging_base_service', 'true')
+    #   end
+    # end
+
     c.tracing.instrument :rails
     c.tracing.instrument :redis, service_name: 'acme-redis'
     c.tracing.instrument :resque
@@ -29,3 +36,12 @@ Datadog.configure do |c|
     end
   end
 end
+
+# Datadog::Tracing.before_flush(
+#   Datadog::Tracing::Pipeline::SpanProcessor.new do |span|
+#     if span.service != Datadog.configuration.service && !span.has_tag?('_dd.base_service')
+#       span.set_tag('_dd.base_service', Datadog.configuration.service)
+#       span.set_tag('tagging_base_service', 'true')
+#     end
+#   end
+# )
