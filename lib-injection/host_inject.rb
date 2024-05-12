@@ -60,17 +60,26 @@ begin
     hash
   end
 
-  Bundler::CLI::Add.new(
-    {
+  [
+    'msgpack',
+    'ffi',
+    'debase-ruby_core_source',
+    'libdatadog',
+    'libddwaf',
+    'datadog'
+  ].each do |gem|
+    options = {
+      # symbolize keys
+      version: gem_version_mapping.fetch(gem),
+      strict: 'true',
       # stringify keys
       'skip-install' => 'true',
-      'require' => 'datadog/auto_instrument',
-      # symbolize keys
-      version: gem_version_mapping.fetch('datadog'),
-      strict: 'true',
-    },
-    ['datadog']
-  ).run
+    }
+
+    options.merge('require' => 'datadog/auto_instrument') if gem == 'datadog'
+
+    Bundler::CLI::Add.new(optinos, [gem]).run
+  end
 rescue Exception => e
   warn "[datadog] Injection failed: #{e.class.name} #{e.message}\nBacktrace: #{e.backtrace.join("\n")}\n#{support_message}"
   ENV['DD_TRACE_SKIP_LIB_INJECTION'] = 'true'
