@@ -76,9 +76,9 @@ begin
       'skip-install' => 'true',
     }
 
-    options.merge('require' => 'datadog/auto_instrument') if gem == 'datadog'
+    options['require'] = 'datadog/auto_instrument' if gem == 'datadog'
 
-    Bundler::CLI::Add.new(optinos, [gem]).run
+    Bundler::CLI::Add.new(options, [gem]).run
   end
 rescue Exception => e
   warn "[datadog] Injection failed: #{e.class.name} #{e.message}\nBacktrace: #{e.backtrace.join("\n")}\n#{support_message}"
