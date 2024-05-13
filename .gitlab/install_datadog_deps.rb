@@ -57,14 +57,6 @@ gem_version_mapping.each do |gem, version|
     '--ignore-dependencies '
 
   case gem
-  # TODO: Remove this case before merge
-  when 'msgpack'
-    gem_install_cmd =
-      'gem install msgpack '\
-        '--version 1.6.0 '\
-        '--no-document '\
-        '--ignore-dependencies '\
-        "--install-dir #{versioned_path} "
   when 'ffi'
     gem_install_cmd << "--install-dir #{versioned_path} "
     # Install `ffi` gem with its built-in `libffi` native extension instead of using system's `libffi`
