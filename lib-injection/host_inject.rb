@@ -1,36 +1,33 @@
 # Keep in sync with auto_inject.rb
 return if ENV['DD_TRACE_SKIP_LIB_INJECTION'] == 'true'
 
-require 'rubygems'
-require 'rbconfig'
-
-ruby_api_version = RbConfig::CONFIG['ruby_version']
-
-dd_lib_injection_path = "/opt/datadog/apm/library/ruby/#{ruby_api_version}"
-
-def debug_log(msg)
-  $stdout.puts msg if ENV['DD_TRACE_DEBUG'] == 'true'
-end
-
-debug_log "[datadog] Loading from #{dd_lib_injection_path}..."
-
 begin
+  require 'rubygems'
+  require 'rbconfig'
   require 'open3'
   require 'bundler'
   require 'bundler/cli'
   require 'shellwords'
   require 'fileutils'
 
-  support_message = 'For help solving this issue, please contact Datadog support at https://docs.datadoghq.com/help/.'
+  ruby_api_version = RbConfig::CONFIG['ruby_version']
+
+  dd_lib_injection_path = "/opt/datadog/apm/library/ruby/#{ruby_api_version}"
+
+  def dd_debug_log(msg)
+    $stdout.puts msg if ENV['DD_TRACE_DEBUG'] == 'true'
+  end
+
+  dd_debug_log "[datadog] Loading from #{dd_lib_injection_path}..."
 
   unless Bundler::SharedHelpers.in_bundle?
-    debug_log '[datadog] Not in bundle... skipping injection'
+    dd_debug_log '[datadog] Not in bundle... skipping injection'
     return
   end
 
   _, status = Open3.capture2e({ 'DD_TRACE_SKIP_LIB_INJECTION' => 'true' }, 'bundle show datadog')
   if status.success?
-    debug_log '[datadog] datadog already installed... skipping injection'
+    dd_debug_log '[datadog] datadog already installed... skipping injection'
     return
   end
 
@@ -52,6 +49,16 @@ begin
     hash
   end
 
+  gemfile = Bundler.default_gemfile
+  lockfile = Bundler.default_lockfile
+
+  datadog_gemfile = gemfile.dirname + 'datadog-Gemfile'
+  datadog_lockfile = lockfile.dirname + 'datadog-Gemfile.lock'
+
+  # Copies for trial
+  ::FileUtils.cp gemfile, datadog_gemfile
+  ::FileUtils.cp lockfile, datadog_lockfile
+
   # This is order dependent
   [
     'msgpack',
@@ -64,59 +71,45 @@ begin
     _, status = Open3.capture2e({ 'DD_TRACE_SKIP_LIB_INJECTION' => 'true' }, "bundle show #{gem}")
 
     if status.success?
-      debug_log "[datadog] #{gem} already installed... skipping..."
+      dd_debug_log "[datadog] #{gem} already installed... skipping..."
       next
     else
       bundle_add_cmd = "bundle add #{gem} --skip-install --version #{gem_version_mapping[gem]} "
 
       bundle_add_cmd << '--require datadog/auto_instrument' if gem == 'datadog'
 
-      debug_log "[datadog] Injection with `#{bundle_add_cmd}`"
+      dd_debug_log "[datadog] Injection with `#{bundle_add_cmd}`"
 
-      gemfile = Bundler::SharedHelpers.default_gemfile
-      lockfile = Bundler::SharedHelpers.default_lockfile
+      output, status = Open3.capture2e(
+        {
+          'BUNDLE_GEMFILE' => datadog_gemfile.to_s,
+          'DD_TRACE_SKIP_LIB_INJECTION' => 'true',
+          'GEM_PATH' => dd_lib_injection_path
+        },
+        bundle_add_cmd
+      )
 
-      datadog_gemfile = gemfile.dirname + 'datadog-Gemfile'
-      datadog_lockfile = lockfile.dirname + 'datadog-Gemfile.lock'
-
-      begin
-        # Copies for trial
-        ::FileUtils.cp gemfile, datadog_gemfile
-        ::FileUtils.cp lockfile, datadog_lockfile
-
-        output, status = Open3.capture2e(
-          {
-            'BUNDLE_GEMFILE' => datadog_gemfile.to_s,
-            'DD_TRACE_SKIP_LIB_INJECTION' => 'true',
-            'GEM_PATH' => dd_lib_injection_path
-          },
-          bundle_add_cmd
-        )
-
-        if status.success?
-          $stdout.puts "[datadog] Successfully injected #{gem} into the application."
-
-          ::FileUtils.cp datadog_gemfile, gemfile
-          ::FileUtils.cp datadog_lockfile, lockfile
-        else
-          warn "[datadog] Injection failed: Unable to add datadog. Error output:\n#{output.split("\n").map do |l|
-            "[datadog] #{l}"
-          end.join("\n")}\n#{support_message}"
-        end
-      ensure
-        # Remove the copies
-        ::FileUtils.rm datadog_gemfile
-        ::FileUtils.rm datadog_lockfile
+      if status.success?
+        $stdout.puts "[datadog] Successfully injected #{gem} into the application."
+      else
+        raise "Injection failed: Unable to injected #{gem} into the application. Output: #{output}"
       end
     end
   end
+
+  ::FileUtils.cp datadog_gemfile, gemfile
+  ::FileUtils.cp datadog_lockfile, lockfile
 
   # Look for pre-installed tracers
   Gem.paths = { 'GEM_PATH' => "#{dd_lib_injection_path}:#{ENV['GEM_PATH']}" }
 
   # Also apply to the environment variable, to guarantee any spawned processes will respected the modified `GEM_PATH`.
   ENV['GEM_PATH'] = Gem.path.join(':')
-rescue Exception => e
-  warn "[datadog] Injection failed: #{e.class.name} #{e.message}\nBacktrace: #{e.backtrace.join("\n")}\n#{support_message}"
+rescue Exception => e # rubocop:disable Lint/RescueException
+  warn "[datadog] Injection failed: #{e.class.name} #{e.message}\nBacktrace: #{e.backtrace.join("\n")}\nFor help solving this issue, please contact Datadog support at https://docs.datadoghq.com/help/." # rubocop:disable Layout/LineLength
+ensure
+  # Remove the copies
+  ::FileUtils.rm(datadog_gemfile, force: true) if defined?(datadog_gemfile)
+  ::FileUtils.rm(datadog_lockfile, force: true) if defined?(datadog_lockfile)
   ENV['DD_TRACE_SKIP_LIB_INJECTION'] = 'true'
 end
