@@ -200,9 +200,9 @@ try_ruby:
     - when: manual
       allow_failure: true
   script:
+    - ruby -v
     - gem -v
     - bundle -v
-    - ruby -v
 
 prepare_image_destinations:
   stage: deploy
