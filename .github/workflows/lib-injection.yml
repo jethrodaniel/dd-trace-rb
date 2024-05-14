@@ -76,7 +76,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v3
       with:
-        name: logs_k8s_lib_injection
+        name: logs_k8s_lib_injection__${{matrix.weblog-variant}}
         path: artifact.tar.gz
 
   test-negative:
