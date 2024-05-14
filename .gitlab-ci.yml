@@ -195,7 +195,7 @@ try_ruby:
   stage: deploy
   tags: ["arch:amd64"]
   needs: [] # This allows the job to run without prerequisites
-  image: registry.ddbuild.io/ci/auto_inject/gitlab:current
+  image: $DOCKER_REGISTRY/images/mirror/ruby:3.2.2
   rules:
     - when: manual
       allow_failure: true
