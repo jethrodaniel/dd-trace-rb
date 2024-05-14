@@ -191,6 +191,18 @@ deploy_to_reliability_env:
     UPSTREAM_PROJECT_NAME: $CI_PROJECT_NAME
     UPSTREAM_COMMIT_SHA: $CI_COMMIT_SHA
 
+try_ruby:
+  stage: deploy
+  tags: ["arch:amd64"]
+  image: registry.ddbuild.io/ci/auto_inject/gitlab:current
+  rules:
+    - when: manual
+      allow_failure: true
+  script:
+    - gem -v
+    - bundle -v
+    - ruby -v
+
 prepare_image_destinations:
   stage: deploy
   tags: ["arch:amd64"]
