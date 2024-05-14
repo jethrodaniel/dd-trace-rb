@@ -194,6 +194,7 @@ deploy_to_reliability_env:
 try_ruby:
   stage: deploy
   tags: ["arch:amd64"]
+  needs: [] # This allows the job to run without prerequisites
   image: registry.ddbuild.io/ci/auto_inject/gitlab:current
   rules:
     - when: manual
