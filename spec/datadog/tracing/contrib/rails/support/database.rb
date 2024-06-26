@@ -53,7 +53,7 @@ module Datadog
             def mysql_url
               hash = mysql_hash
 
-              "mysql2://root:#{hash[:password]}@#{hash[:host]}:#{hash[:port]}/#{hash[:database]}"
+              "mysql2://root:#{hash[:password]}@#{hash[:host]}:#{hash[:port]}/#{hash[:database]}?allowPublicKeyRetrieval=true"
             end
 
             def trilogy_url
