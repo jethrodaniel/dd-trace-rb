@@ -20,7 +20,10 @@ RSpec.describe 'Trlogy::Client patcher' do
       port: port,
       database: database,
       username: username,
-      password: password
+      password: password,
+      ssl: true,
+      ssl_mode: Trilogy::SSL_PREFERRED_NOVERIFY,
+      tls_min_version: Trilogy::TLS_VERSION_12
     )
   end
 
