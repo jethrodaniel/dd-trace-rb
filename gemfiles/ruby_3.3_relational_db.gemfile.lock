@@ -153,7 +153,7 @@ GEM
       mini_portile2 (~> 2.8.0)
     strscan (3.1.0)
     thor (1.2.2)
-    trilogy (2.7.0)
+    trilogy (2.8.1)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.4.2)
@@ -208,7 +208,7 @@ DEPENDENCIES
   simplecov!
   simplecov-cobertura (~> 2.1.0)
   sqlite3 (>= 1.4.2)
-  trilogy
+  trilogy (>= 2.8.0)
   warning (~> 1)
   webmock (>= 3.10.0)
   webrick (>= 1.7.0)

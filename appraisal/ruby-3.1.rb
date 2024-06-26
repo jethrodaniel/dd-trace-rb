@@ -43,7 +43,7 @@ end
 
 appraise 'rails61-trilogy' do
   gem 'rails', '~> 6.1.0'
-  gem 'trilogy'
+  gem 'trilogy', '>= 2.8.0' # Add support for caching_sha2_password when using MySQL 8.0+.
   gem 'activerecord-trilogy-adapter'
   gem 'sprockets', '< 4'
   gem 'lograge', '~> 0.11'
@@ -97,7 +97,7 @@ appraise 'relational_db' do
   gem 'pg', platform: :ruby
   gem 'sqlite3', '>= 1.4.2', platform: :ruby
   gem 'sequel', '~> 5.54.0' # TODO: Support sequel 5.62.0+
-  gem 'trilogy'
+  gem 'trilogy', '>= 2.8.0' # Add support for caching_sha2_password when using MySQL 8.0+.
 end
 
 appraise 'activesupport' do

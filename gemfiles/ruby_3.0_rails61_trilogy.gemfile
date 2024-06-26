@@ -37,7 +37,7 @@ gem "dogstatsd-ruby", ">= 3.3.0", "!= 5.0.0", "!= 5.0.1", "!= 5.1.0"
 gem "google-protobuf", ["~> 3.0", "!= 3.7.0", "!= 3.7.1"]
 gem "ffi", "~> 1.16.3", require: false
 gem "rails", "~> 6.1.0"
-gem "trilogy"
+gem "trilogy", ">= 2.8.0"
 gem "activerecord-trilogy-adapter"
 gem "sprockets", "< 4"
 gem "lograge", "~> 0.11"
