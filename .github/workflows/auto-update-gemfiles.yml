@@ -53,10 +53,16 @@ jobs:
       - name: Build gem
         run: |
             bundle exec rake edge:update
+    
 
-      - name: Commit gemfiles changes, if any, back to the branch
-        uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a
+      - name: Create Pull Request
+        id: pr
+        uses: peter-evans/create-pull-request@v6
         with:
-          commit_message: Update gemfiles/*
-          branch: update-latests-version
-          create_branch: true
+            token: ${{ secrets.GITHUB_TOKEN }}
+            branch: "upgrade-gemfiles"
+            commit-message: "Test updating gemfiles"
+            delete-branch: true
+            base: master
+            title: "chore: update gemfiles"
+            body: Test updating gemfiles.
