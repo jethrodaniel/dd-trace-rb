@@ -51,7 +51,9 @@ jobs:
               - 'gemfiles/**'
 
       - name: Build gem
-        run: bundle exec rake edge:update
+        run: |
+            echo "Current directory: $(pwd)"
+            bundle exec rake edge:update
 
       - name: Commit gemfiles changes, if any, back to the branch
         uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a
