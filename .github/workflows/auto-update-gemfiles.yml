@@ -24,6 +24,9 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
         pull-requests: write
+    strategy:
+        matrix:
+            ruby: ['2.7', '3.0', '3.1', '3.2']
 
     steps:
       # Only execute if there's a PR attached to this branch.
@@ -34,7 +37,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'
+          ruby-version: ${{ matrix.ruby }}
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Check for changes in Gemfiles and related files
