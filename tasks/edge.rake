@@ -10,6 +10,7 @@ namespace :edge do
 
     prefix = "#{RUBY_ENGINE}-#{ruby_version}"
     project_root = Pathname.new("#{__dir__}/../").cleanpath.to_s
+    puts project_root
 
     [
       'stripe',
