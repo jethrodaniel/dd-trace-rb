@@ -10,7 +10,6 @@ namespace :edge do
 
     prefix = "#{RUBY_ENGINE}-#{ruby_version}"
     project_root = Pathname.new("#{__dir__}/../").cleanpath.to_s
-    puts project_root
 
     [
       'stripe',
@@ -27,7 +26,7 @@ namespace :edge do
       end
 
       gemfiles = candidates.keys.map do |group|
-        "#{project_root}/gemfiles/#{prefix}-#{group}.gemfile"
+        "#{project_root}/gemfiles/#{prefix}-#{group}.gemfile".tr('-', '_')
       end
 
       gemfiles.each do |gemfile|
