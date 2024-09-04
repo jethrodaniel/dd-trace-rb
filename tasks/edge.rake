@@ -14,7 +14,8 @@ namespace :edge do
     [
       'stripe',
       'elasticsearch',
-      # more integrations here
+      'rack',
+      # TODO: add more integrations here
     ].each do |integration|
       candidates = TEST_METADATA.fetch(integration).select do |_, rubies|
         if RUBY_PLATFORM == 'java'
