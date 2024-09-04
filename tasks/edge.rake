@@ -30,7 +30,7 @@ namespace :edge do
       gemfiles = candidates.keys.map do |group|
         filename = "#{prefix}-#{group}.gemfile"
         adjusted_filename = filename.tr('-', '_')
-        "#{project_root}/gemfiles/#{prefix}-#{adjusted_filename}"
+        "#{project_root}/gemfiles/#{adjusted_filename}"
       end
 
       gemfiles.each do |gemfile|
