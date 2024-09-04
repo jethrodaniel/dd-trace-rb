@@ -26,7 +26,7 @@ namespace :edge do
       end
 
       gemfiles = candidates.keys.map do |group|
-        "#{project_root}/gemfiles/#{prefix}-#{group}.gemfile".tr('-', '_')
+        "#{project_root}/gemfiles/#{prefix}-#{group}.gemfile"
       end
 
       gemfiles.each do |gemfile|
