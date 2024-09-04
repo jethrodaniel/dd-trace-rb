@@ -5,7 +5,7 @@ name: Auto-update Gemfiles
 on:
   pull_request:
     paths:
-      - '.github/scripts/version_updater.rb'
+      - 'tasks/edge.rake'
       - 'Gemfile'
       - 'Gemfile.lock'
       - 'appraisal/**'
