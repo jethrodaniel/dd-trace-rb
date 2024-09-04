@@ -52,7 +52,6 @@ jobs:
 
       - name: Build gem
         run: |
-            echo "Current directory: $(pwd)"
             bundle exec rake edge:update
 
       - name: Commit gemfiles changes, if any, back to the branch
