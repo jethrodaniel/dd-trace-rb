@@ -55,9 +55,7 @@ jobs:
           # Test result
           cat datadog.gemspec | grep -e allowed_push_host
       - name: Build gem
-        run: |
-          echo "Current directory: $(pwd)"
-          bundle exec rake build
+        run: bundle exec rake build
       - name: List gem
         run: |
           find pkg
