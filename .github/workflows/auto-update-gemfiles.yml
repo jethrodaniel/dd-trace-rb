@@ -22,6 +22,8 @@ jobs:
   update-gemfiles:
     name: Auto-update Gemfiles
     runs-on: ubuntu-22.04
+    permissions:
+        pull-requests: write
 
     steps:
       # Only execute if there's a PR attached to this branch.
