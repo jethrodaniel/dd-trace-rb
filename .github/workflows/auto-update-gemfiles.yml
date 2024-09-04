@@ -52,6 +52,7 @@ jobs:
 
       - name: Build gem
         run: bundle exec rake edge:update
+        working-directory: /home/runner/work/dd_trace_rb/gemfiles
 
       - name: Commit gemfiles changes, if any, back to the branch
         uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a
