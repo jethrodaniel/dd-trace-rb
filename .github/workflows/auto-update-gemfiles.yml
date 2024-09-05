@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
         pull-requests: write
+        contents: write
     strategy:
         matrix:
             ruby: ['2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4']
