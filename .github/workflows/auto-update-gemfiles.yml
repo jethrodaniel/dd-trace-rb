@@ -67,9 +67,9 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
             token: ${{ secrets.GITHUB_TOKEN }}
-            branch: "upgrade-gemfiles"
+            branch: "test-upgrade-gemfiles"
             commit-message: "Test updating gemfiles"
             delete-branch: true
             base: master
             title: "chore: update gemfiles"
-            body: Test updating gemfiles.
+            body: Test updating gemfiles to use latest integration versions
