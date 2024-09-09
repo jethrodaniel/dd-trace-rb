@@ -14,8 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  update-gemfiles:
-    name: Auto-update Gemfiles
+  build:
     runs-on: ubuntu-22.04
     permissions:
         actions: read # read secrets
@@ -42,12 +41,12 @@ jobs:
                 version: '2.6'
               - name: ruby
                 version: '2.5'
-              - name: jruby
-                version: '9.4'
-              - name: jruby
-                version: '9.3'
-              - name: jruby
-                version: '9.2'
+              # - name: jruby
+              #   version: '9.4'
+              # - name: jruby
+              #   version: '9.3'
+              # - name: jruby
+              #   version: '9.2'
     container:
       image: "ghcr.io/datadog/images-rb/engines/${{ matrix.engine.name }}:${{ matrix.engine.version }}"
     steps:
@@ -56,17 +55,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Output Ruby version
+        run: |
+          echo "Ruby version: $RUBY_VERSION"
+      
       - name: Build gem
         run: |
             bundle install
             bundle exec rake edge:update
+      
+      - name: Store modified gemfiles
+        id: mod_files
+        run: |
+          # Example command to create a tar.gz file of modified files
+          mkdir -p modified_gemfiles
+          git diff --name-only HEAD~1 HEAD > modified_gemfiles.txt
+          while IFS= read -r file; do
+            if [ -f "$file" ]; then
+              cp --parents "$file" modified_gemfiles/
+            fi
+          done < modified_gemfiles.txt
+          tar -czf modified_gemfiles-${{ matrix.engine.version }}.tar.gz -C modified_gemfiles .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: 'datadog-gem-${{ matrix.engine.name }}-${{ matrix.engine. version }}-gha${{ github.run_id }}'
-          path: '**/*.gemfile.lock'
-          
+          path: modified_gemfiles-${{ matrix.engine.version }}.tar.gz
+
       # - name: Create Pull Request
       #   id: pr
       #   uses: peter-evans/create-pull-request@v7
@@ -78,3 +94,41 @@ jobs:
       #       base: master
       #       title: "chore: update gemfiles"
       #       body: Test updating gemfiles to use latest integration versions
+  aggregate:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts for Ruby 3.3
+        uses: actions/download-artifact@v3
+        with:
+          name: modified-gemfiles-3.3
+          path: artifacts/3.3
+    
+      - name: Download artifacts for Ruby 3.4
+        uses: actions/download-artifact@v3
+        with:
+          name: modified-gemfiles-3.4
+          path: artifacts/3.4
+      
+      # TODO: add more runtime artifacts here
+
+      - name: Aggregate output
+        run: |
+          mkdir -p aggregated
+          tar -xzf artifacts/3.3/modified-gemfiles-3.3.tar.gz -C aggregated
+          tar -xzf artifacts/3.4/modified-gemfiles-3.4.tar.gz -C aggregated
+          # aggregate into folder aggregated
+          tar -czf aggregated-files.tar.gz -C aggregated .
+      
+      - name: Extract files
+        run: |
+          mkdir -p to-commit
+          tar -xzf aggregated-files.tar.gz -C to-commit
+
+      - name: Commit files and show diff
+        run: |
+          git add aggregated/
+          git diff
+        
+
+
