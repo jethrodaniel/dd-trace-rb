@@ -50,16 +50,13 @@ jobs:
     container:
       image: "ghcr.io/datadog/images-rb/engines/${{ matrix.engine.name }}:${{ matrix.engine.version }}"
     steps:
-      # Only execute if there's a PR attached to this branch.
-      # Because we execute on `push`, we have to double check here if this is part of a PR.
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history to access all branches
 
       - name: Output Ruby version
-        run: |
-          echo "Ruby version: $RUBY_VERSION"
+        run: ruby -v
       
       - name: Build gem
         run: |
@@ -126,7 +123,3 @@ jobs:
       #   run: |
       #     git add aggregated/
       #     git diff --cached
-  
-        
-
-
