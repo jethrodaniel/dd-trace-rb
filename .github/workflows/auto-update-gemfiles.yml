@@ -71,12 +71,8 @@ jobs:
         run: |
           # Example command to create a tar.gz file of modified files
           mkdir -p modified_gemfiles
-          git diff --name-only origin/master origin/${GITHUB_HEAD_REF} > modified_gemfiles.txt
-          while IFS= read -r file; do
-            if [ -f "$file" ]; then
-              cp --parents "$file" modified_gemfiles/
-            fi
-          done < modified_gemfiles.txt
+          VERSION=${{ matrix.engine.version }}
+          find . -name "*${VERSION}_rack_*.gemfile" -exec cp --parents {} modified_gemfiles/ \;
           tar -czf modified_gemfiles-${{ matrix.engine.version }}.tar.gz -C modified_gemfiles .
 
       - name: Upload artifact
