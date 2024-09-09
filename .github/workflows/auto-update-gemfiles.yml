@@ -3,16 +3,11 @@ name: Auto-update Gemfiles
 # This action cannot be skipped altogether because it is a mandatory status check.
 # Instead we conditionally skip it at job level, instead of workflow level.
 on:
-  pull_request:
-    paths:
-      - 'tasks/edge.rake'
-      - 'Gemfile'
-      - 'Gemfile.lock'
-      - 'appraisal/**'
-      - 'gemfiles/**'
+  push:
+    branches:
+      - quinna/update-gemfiles
   workflow_dispatch:
     
-
 # Ensure obsolete job is cancelled if another commit is pushed to the same branch.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -27,49 +22,58 @@ jobs:
         pull-requests: write
         contents: write
     strategy:
+        fail-fast: false
         matrix:
-            # ADD NEW RUBIES HERE
-            ruby: ['2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4']
-
+            engine:
+              # ADD NEW RUBIES HERE
+              - name: ruby
+                version: '3.4'
+              - name: ruby
+                version: '3.3'
+              - name: ruby
+                version: '3.2'
+              - name: ruby
+                version: '3.1'
+              - name: ruby
+                version: '3.0'
+              - name: ruby
+                version: '2.7'
+              - name: ruby
+                version: '2.6'
+              - name: ruby
+                version: '2.5'
+              - name: jruby
+                version: '9.4'
+              - name: jruby
+                version: '9.3'
+              - name: jruby
+                version: '9.2'
+    container:
+      image: "ghcr.io/datadog/images-rb/engines/${{ matrix.engine.name }}:${{ matrix.engine.version }}"
     steps:
       # Only execute if there's a PR attached to this branch.
       # Because we execute on `push`, we have to double check here if this is part of a PR.
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-
-      - name: Check for changes in Gemfiles and related files
-        uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 # v2.11.1
-        id: filter
-        with:
-          filters: |
-            gemfile:
-              - Gemfile
-              - Appraisals
-              - datadog.gemspec
-              - tasks/appraisal.rake
-              - .github/workflows/update-gemfiles.yml
-              - lib/datadog/version.rb
-              - 'appraisal/**'
-              - 'gemfiles/**'
-
       - name: Build gem
         run: |
-            bundle exec rake edge:update
+            bundle exec rake edge:update[stripe]
 
-      - name: Create Pull Request
-        id: pr
-        uses: peter-evans/create-pull-request@v7
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
         with:
-            token: ${{ secrets.GITHUB_TOKEN }}
-            branch: "test-upgrade-gemfiles"
-            commit-message: "Test updating gemfiles"
-            delete-branch: true
-            base: master
-            title: "chore: update gemfiles"
-            body: Test updating gemfiles to use latest integration versions
+          name: 'datadog-gem-${{ matrix.engine.name }}-${{ matrix.engine. version }}-gha${{ github.run_id }}'
+          path: '*.gemfile.lock'
+
+      # - name: Create Pull Request
+      #   id: pr
+      #   uses: peter-evans/create-pull-request@v7
+      #   with:
+      #       token: ${{ secrets.GITHUB_TOKEN }}
+      #       branch: "test-upgrade-gemfiles"
+      #       commit-message: "Test updating gemfiles"
+      #       delete-branch: true
+      #       base: master
+      #       title: "chore: update gemfiles"
+      #       body: Test updating gemfiles to use latest integration versions
