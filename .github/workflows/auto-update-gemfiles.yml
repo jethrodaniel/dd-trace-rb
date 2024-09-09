@@ -58,6 +58,7 @@ jobs:
 
       - name: Build gem
         run: |
+            bundle install
             bundle exec rake edge:update[stripe]
 
       - name: Upload artifact
