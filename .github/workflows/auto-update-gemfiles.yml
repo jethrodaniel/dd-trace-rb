@@ -69,7 +69,7 @@ jobs:
         run: |
           # Example command to create a tar.gz file of modified files
           mkdir -p modified_gemfiles
-          git diff --name-only > modified_gemfiles.txt
+          git diff --name-only origin/master origin/${GITHUB_HEAD_REF} > modified_gemfiles.txt
           while IFS= read -r file; do
             if [ -f "$file" ]; then
               cp --parents "$file" modified_gemfiles/
