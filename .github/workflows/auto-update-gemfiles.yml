@@ -59,14 +59,14 @@ jobs:
       - name: Build gem
         run: |
             bundle install
-            bundle exec rake edge:update[stripe]
+            bundle exec rake edge:update
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: 'datadog-gem-${{ matrix.engine.name }}-${{ matrix.engine. version }}-gha${{ github.run_id }}'
-          path: '*.gemfile.lock'
-
+          path: '**/*.gemfile.lock'
+          
       # - name: Create Pull Request
       #   id: pr
       #   uses: peter-evans/create-pull-request@v7
