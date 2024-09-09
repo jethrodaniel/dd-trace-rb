@@ -68,8 +68,8 @@ jobs:
         run: |
           mkdir -p artifacts/${{ matrix.engine.version }}
           VERSION=${{ matrix.engine.version }}
-          find . -name "*${VERSION}_rack_*.gemfile" -exec cp --parents {} artifacts/${{ matrix.engine.version }}/ \;
-          
+          find . -name "*${VERSION}_rack_*.gemfile" -exec cp {} artifacts/${{ matrix.engine.version }}/ \;
+
           # Print files
           ls -R artifacts/${{ matrix.engine.version }}/
 
@@ -104,22 +104,6 @@ jobs:
         run: |
           echo "Contents of artifacts directory:"
           ls -R artifacts/
-
-      - name: Aggregate output
-        run: |
-          mkdir -p aggregated
-          tar -xzf artifacts/3.3/modified_gemfiles-3.3.tar.gz -C aggregated
-          tar -xzf artifacts/3.4/modified_gemfiles-3.4.tar.gz -C aggregated
-          # aggregate into folder aggregated
-          tar -czf aggregated-files.tar.gz -C aggregated .
-      
-      - name: Extract files
-        run: |
-          mkdir -p to-commit
-          tar -xzf aggregated-files.tar.gz -C to-commit
-
-          # print files to be committed
-          ls -R to-commit
 
       # - name: Commit files and show diff
       #   run: |
