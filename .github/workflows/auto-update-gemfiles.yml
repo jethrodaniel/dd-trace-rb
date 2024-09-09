@@ -119,8 +119,8 @@ jobs:
       - name: Aggregate output
         run: |
           mkdir -p aggregated
-          tar -xzf modified_gemfiles-3.3.tar.gz -C aggregated
-          tar -xzf modified_gemfiles-3.4.tar.gz -C aggregated
+          tar -xzf artifacts/3.3/modified_gemfiles-3.3.tar.gz -C aggregated
+          tar -xzf artifacts/3.4/modified_gemfiles-3.4.tar.gz -C aggregated
           # aggregate into folder aggregated
           tar -czf aggregated-files.tar.gz -C aggregated .
       
@@ -132,7 +132,7 @@ jobs:
       - name: Commit files and show diff
         run: |
           git add aggregated/
-          git diff
+          git diff --cached
         
 
 
