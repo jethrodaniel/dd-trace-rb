@@ -128,11 +128,12 @@ jobs:
         run: |
           mkdir -p to-commit
           tar -xzf aggregated-files.tar.gz -C to-commit
+          ls -R to-commit
 
-      - name: Commit files and show diff
-        run: |
-          git add aggregated/
-          git diff --cached
+      # - name: Commit files and show diff
+      #   run: |
+      #     git add aggregated/
+      #     git diff --cached
         
 
 
