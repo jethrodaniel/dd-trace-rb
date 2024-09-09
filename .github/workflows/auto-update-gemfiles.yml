@@ -69,11 +69,12 @@ jobs:
       - name: Store modified gemfiles
         id: mod_files
         run: |
-          # Example command to create a tar.gz file of modified files
           mkdir -p modified_gemfiles
           VERSION=${{ matrix.engine.version }}
           find . -name "*${VERSION}_rack_*.gemfile" -exec cp --parents {} modified_gemfiles/ \;
           tar -czf modified_gemfiles-${{ matrix.engine.version }}.tar.gz -C modified_gemfiles .
+
+          # Print files
           find modified_gemfiles/ -type f
 
       - name: Upload artifact
@@ -82,17 +83,6 @@ jobs:
           name: 'datadog-gem-${{ matrix.engine.name }}-${{ matrix.engine. version }}-gha${{ github.run_id }}'
           path: modified_gemfiles-${{ matrix.engine.version }}.tar.gz
 
-      # - name: Create Pull Request
-      #   id: pr
-      #   uses: peter-evans/create-pull-request@v7
-      #   with:
-      #       token: ${{ secrets.GITHUB_TOKEN }}
-      #       branch: "test-upgrade-gemfiles"
-      #       commit-message: "Test updating gemfiles"
-      #       delete-branch: true
-      #       base: master
-      #       title: "chore: update gemfiles"
-      #       body: Test updating gemfiles to use latest integration versions
   aggregate:
     needs: build
     runs-on: ubuntu-latest
@@ -128,12 +118,15 @@ jobs:
         run: |
           mkdir -p to-commit
           tar -xzf aggregated-files.tar.gz -C to-commit
+
+          # print files to be committed
           ls -R to-commit
 
       # - name: Commit files and show diff
       #   run: |
       #     git add aggregated/
       #     git diff --cached
+  
         
 
 
