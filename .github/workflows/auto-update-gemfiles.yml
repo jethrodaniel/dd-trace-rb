@@ -66,24 +66,26 @@ jobs:
       - name: Store modified gemfiles
         id: mod_files
         run: |
-          mkdir -p modified_gemfiles
+          mkdir -p artifacts/${{ matrix.engine.version }}
           VERSION=${{ matrix.engine.version }}
-          find . -name "*${VERSION}_rack_*.gemfile" -exec cp --parents {} modified_gemfiles/ \;
-          tar -czf modified_gemfiles-${{ matrix.engine.version }}.tar.gz -C modified_gemfiles .
-
+          find . -name "*${VERSION}_rack_*.gemfile" -exec cp --parents {} artifacts/${{ matrix.engine.version }}/ \;
+          
           # Print files
-          find modified_gemfiles/ -type f
+          ls -R artifacts/${{ matrix.engine.version }}/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: 'datadog-gem-${{ matrix.engine.name }}-${{ matrix.engine. version }}-gha${{ github.run_id }}'
-          path: modified_gemfiles-${{ matrix.engine.version }}.tar.gz
+          name: 'datadog-gem-${{ matrix.engine.name }}-${{ matrix.engine.version }}-gha${{ github.run_id }}'
+          path: artifacts/${{ matrix.engine.version }}
 
   aggregate:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Download artifacts for Ruby 3.3
         uses: actions/download-artifact@v3
         with:
