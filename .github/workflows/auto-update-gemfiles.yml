@@ -74,6 +74,7 @@ jobs:
           VERSION=${{ matrix.engine.version }}
           find . -name "*${VERSION}_rack_*.gemfile" -exec cp --parents {} modified_gemfiles/ \;
           tar -czf modified_gemfiles-${{ matrix.engine.version }}.tar.gz -C modified_gemfiles .
+          find modified_gemfiles/ -type f
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -99,13 +100,13 @@ jobs:
       - name: Download artifacts for Ruby 3.3
         uses: actions/download-artifact@v3
         with:
-          name: modified-gemfiles-3.3
+          name: 'datadog-gem-ruby-3.3-gha${{ github.run_id }}'
           path: artifacts/3.3
     
       - name: Download artifacts for Ruby 3.4
         uses: actions/download-artifact@v3
         with:
-          name: modified-gemfiles-3.4
+          name: 'datadog-gem-ruby-3.4-gha${{ github.run_id }}'
           path: artifacts/3.4
       
       # TODO: add more runtime artifacts here
@@ -113,8 +114,8 @@ jobs:
       - name: Aggregate output
         run: |
           mkdir -p aggregated
-          tar -xzf artifacts/3.3/modified-gemfiles-3.3.tar.gz -C aggregated
-          tar -xzf artifacts/3.4/modified-gemfiles-3.4.tar.gz -C aggregated
+          tar -xzf artifacts/3.3/datadog-gem-ruby-3.3-gha${{ github.run_id }}.tar.gz -C aggregated
+          tar -xzf artifacts/3.4/datadog-gem-ruby-3.4-gha${{ github.run_id }}.tar.gz -C aggregated
           # aggregate into folder aggregated
           tar -czf aggregated-files.tar.gz -C aggregated .
       
