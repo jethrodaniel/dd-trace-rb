@@ -110,6 +110,11 @@ jobs:
           path: artifacts/3.4
       
       # TODO: add more runtime artifacts here
+    
+      - name: List contents of artifacts directory
+        run: |
+          echo "Contents of artifacts directory:"
+          ls -R artifacts/
 
       - name: Aggregate output
         run: |
