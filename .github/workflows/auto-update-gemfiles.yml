@@ -87,7 +87,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-    
+      - name: Download artifacts for Ruby 2.5
+        uses: actions/download-artifact@v3
+        with:
+          name: 'datadog-gem-ruby-2.5-gha${{ github.run_id }}'
+          path: artifacts/2.5
+
+      - name: Download artifacts for Ruby 2.6
+        uses: actions/download-artifact@v3
+        with:
+          name: 'datadog-gem-ruby-2.6-gha${{ github.run_id }}'
+          path: artifacts/2.6
+
       - name: Download artifacts for Ruby 2.7
         uses: actions/download-artifact@v3
         with:
