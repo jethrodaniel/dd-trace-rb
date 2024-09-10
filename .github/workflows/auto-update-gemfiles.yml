@@ -68,6 +68,7 @@ jobs:
         run: |
           mkdir -p artifacts/${{ matrix.engine.version }}
           VERSION=${{ matrix.engine.version }}
+          # Find all modified rack gemfiles (for testing)
           find . -name "*${VERSION}_rack_*.gemfile" -exec cp {} artifacts/${{ matrix.engine.version }}/ \;
 
           # Print files
@@ -85,6 +86,32 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+    
+      - name: Download artifacts for Ruby 2.7
+        uses: actions/download-artifact@v3
+        with:
+          name: 'datadog-gem-ruby-2.7-gha${{ github.run_id }}'
+          path: artifacts/2.7
+
+      - name: Download artifacts for Ruby 3.0
+        uses: actions/download-artifact@v3
+        with:
+          name: 'datadog-gem-ruby-3.0-gha${{ github.run_id }}'
+          path: artifacts/3.0
+
+      - name: Download artifacts for Ruby 3.1
+        uses: actions/download-artifact@v3
+        with:
+          name: 'datadog-gem-ruby-3.1-gha${{ github.run_id }}'
+          path: artifacts/3.1
+    
+      - name: Download artifacts for Ruby 3.2
+        uses: actions/download-artifact@v3
+        with:
+          name: 'datadog-gem-ruby-3.2-gha${{ github.run_id }}'
+          path: artifacts/3.3
+    
 
       - name: Download artifacts for Ruby 3.3
         uses: actions/download-artifact@v3
