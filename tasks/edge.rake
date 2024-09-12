@@ -66,16 +66,29 @@ namespace :edge do
         end
       end
 
-      gemfiles = candidates.keys.map do |group|
-        AppraisalConversion.to_bundle_gemfile(group)
+      gemfiles = candidates.keys.map { |group| AppraisalConversion.to_bundle_gemfile(group) }
+
+      version_map = gemfiles.each_with_object({}) do |gemfile, hash|
+        match = gemfile.match(/_(\d+)\.gemfile$/)
+        hash[match[1].to_i] = gemfile if match
       end
+      
+      max_version = version_map.keys.max
+      min_version = version_map.keys.min
+      
+      max_version_gemfile = version_map[max_version]
+      min_version_gemfile = version_map[min_version]      
 
-      gemfiles.each do |gemfile|
-        Bundler.with_unbundled_env do
-          puts "======== Updating #{integration} in #{gemfile} ========\n"
-          output, = Open3.capture2e({ 'BUNDLE_GEMFILE' => gemfile.to_s }, "bundle lock --update=#{gem}")
+      [max_version_gemfile, min_version_gemfile].each do |gemfile|
+        if gemfile
+          Bundler.with_unbundled_env do
+            puts "======== Updating #{integration} in #{gemfile} ========\n"
+            output, = Open3.capture2e({ 'BUNDLE_GEMFILE' => gemfile.to_s }, "bundle lock --update=#{gem}")
 
-          puts output
+            puts output
+          end
+        else
+          puts "No valid gemfiles found for #{integration}"
         end
       end
     end
