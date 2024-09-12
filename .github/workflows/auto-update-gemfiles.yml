@@ -54,9 +54,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history to access all branches
-      
+
+        
       - name: Capture initial state
         run: |
+          cd $GITHUB_WORKSPACE
           git diff --name-only HEAD > before_update.txt
 
       - name: Output Ruby version
@@ -69,7 +71,6 @@ jobs:
 
       - name: Capture updated files
         run: |
-          cd $GITHUB_WORKSPACE
           git diff --name-only HEAD > after_update.txt
           comm -23 <(sort after_update.txt) <(sort before_update.txt) > modified_files.txt
       
