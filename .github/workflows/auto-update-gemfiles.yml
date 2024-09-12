@@ -69,6 +69,7 @@ jobs:
 
       - name: Capture updated files
         run: |
+          cd $GITHUB_WORKSPACE
           git diff --name-only HEAD > after_update.txt
           comm -23 <(sort after_update.txt) <(sort before_update.txt) > modified_files.txt
       
