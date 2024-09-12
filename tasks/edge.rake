@@ -66,30 +66,31 @@ namespace :edge do
         end
       end
 
-      gemfiles = candidates.keys.map { |group| AppraisalConversion.to_bundle_gemfile(group) }
+      max_version = nil
+      max_version_gemfile = nil
 
-      version_map = gemfiles.each_with_object({}) do |gemfile, hash|
+      candidates.keys.each do |group|
+        gemfile = AppraisalConversion.to_bundle_gemfile(group)
         match = gemfile.match(/_(\d+)\.gemfile$/)
-        hash[match[1].to_i] = gemfile if match
-      end
-      
-      max_version = version_map.keys.max
-      min_version = version_map.keys.min
-      
-      max_version_gemfile = version_map[max_version]
-      min_version_gemfile = version_map[min_version]      
+        next unless match
 
-      [max_version_gemfile, min_version_gemfile].each do |gemfile|
-        if gemfile
-          Bundler.with_unbundled_env do
-            puts "======== Updating #{integration} in #{gemfile} ========\n"
-            output, = Open3.capture2e({ 'BUNDLE_GEMFILE' => gemfile.to_s }, "bundle lock --update=#{gem}")
+        version = match[1].to_i
 
-            puts output
-          end
-        else
-          puts "No valid gemfiles found for #{integration}"
+        if max_version.nil? || version > max_version
+          max_version = version
+          max_version_gemfile = gemfile
         end
+      end
+
+      if max_version_gemfile
+        Bundler.with_unbundled_env do
+          puts "======== Updating #{integration} in #{max_version_gemfile} ========\n"
+          output, = Open3.capture2e({ 'BUNDLE_GEMFILE' => max_version_gemfile.to_s }, "bundle lock --update=#{gem}")
+
+          puts output
+        end
+      else
+        puts "No valid gemfiles found for #{integration}"
       end
     end
   end
