@@ -54,6 +54,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history to access all branches
+      
+      - name: Capture initial state
+        run: |
+          git diff --name-only HEAD > before_update.txt
 
       - name: Output Ruby version
         run: ruby -v
@@ -62,6 +66,11 @@ jobs:
         run: |
             bundle install
             bundle exec rake edge:update
+
+      - name: Capture updated files
+        run: |
+          git diff --name-only HEAD > after_update.txt
+          comm -23 <(sort after_update.txt) <(sort before_update.txt) > modified_files.txt
       
       - name: Store modified gemfiles
         id: mod_files
@@ -69,7 +78,16 @@ jobs:
           mkdir -p artifacts/${{ matrix.engine.version }}
           VERSION=${{ matrix.engine.version }}
           # Find all modified rack gemfiles (for testing)
-          find . -name "*${VERSION}_rack_*.gemfile" -exec cp {} artifacts/${{ matrix.engine.version }}/ \;
+
+          # Read the list of modified files and move them to the artifacts directory
+          while IFS= read -r file; do
+            if [ -f "$file" ]; then
+              echo "Moving $file to artifacts/"
+              mv "$file" "artifacts/${{matrix.engine.version}}/$file"
+            else
+              echo "$file does not exist, skipping."
+            fi
+          done < modified_files.txt
 
           # Print files
           ls -R artifacts/${{ matrix.engine.version }}/
