@@ -47,12 +47,11 @@ namespace :edge do
   desc 'Update edge build for current ruby runtime'
   task :update do |_t, args|
     ruby_version = RUBY_VERSION[0..2]
-    # mapping from integration to gem 
     whitelist = {
-      'elasticsearch' => 'elasticsearch',
-      'rack' => 'rack',
       'stripe' => 'stripe',
-      # TODO: Add more integrations here, when they are extracted to its own isolated group
+      'elasticsearch' => 'elasticsearch',
+      'opensearch' => 'opensearch-ruby',
+      # Add more integrations here, when they are extracted to its own isolated group
     }
 
     whitelist = whitelist.slice(*args.extras) if args.extras.any?
