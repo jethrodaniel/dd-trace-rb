@@ -59,6 +59,9 @@ jobs:
       - name: Test git command
         run: git status
       
+      - name: Show which user id we need
+        run: ls -n /__w/dd-trace-rb/dd-trace-rb
+      
       - name: Output Ruby version
         run: ruby -v
       
