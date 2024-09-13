@@ -70,26 +70,21 @@ jobs:
             bundle install
             bundle exec rake edge:update
 
-      - name: Capture updated files
+      - name: Capture modified gemfiles
         run: |
-          git diff --name-only HEAD > after_update.txt
-          comm -23 <(sort after_update.txt) <(sort before_update.txt) > modified_files.txt
-      
+          git status --porcelain | grep '^ M gemfiles/' | awk '{print $2}' > modified_files.txt
+
       - name: Store modified gemfiles
         id: mod_files
         run: |
           mkdir -p artifacts/${{ matrix.engine.version }}
           VERSION=${{ matrix.engine.version }}
-          # Find all modified rack gemfiles (for testing)
-
-          # Read the list of modified files and move them to the artifacts directory
+        
+          # Find all modified gemfiles and move them to the artifacts directory
           while IFS= read -r file; do
-            if [ -f "$file" ]; then
-              echo "Moving $file to artifacts/"
-              mv "$file" "artifacts/${{matrix.engine.version}}/$file"
-            else
-              echo "$file does not exist, skipping."
-            fi
+            mkdir -p "artifacts/${VERSION}/$(dirname "$file")"
+            echo "Moving $file to artifacts/${VERSION}/$file"
+            mv "$file" "artifacts/${VERSION}/$file"
           done < modified_files.txt
 
           # Print files
