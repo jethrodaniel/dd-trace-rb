@@ -59,7 +59,7 @@ jobs:
       - name: Capture initial state
         run: |
           echo ${{ github.workspace }}
-          cd ${{ github.workspace }}
+          echo $GITHUB_WORKSPACE
           git diff --name-only HEAD > before_update.txt
 
       - name: Output Ruby version
