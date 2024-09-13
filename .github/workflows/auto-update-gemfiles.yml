@@ -62,10 +62,10 @@ jobs:
       - name: Output Ruby version
         run: ruby -v
       
-      - name: Give permissions for bundle cache
-        run: | 
-          sudo chown -R 1001:1001 /usr/local/bundle/cache
-          sudo chmod -R u+w /usr/local/bundle/cache
+      # - name: Give permissions for bundle cache
+      #   run: | 
+      #     sudo chown -R 1001:1001 /usr/local/bundle/cache
+      #     sudo chmod -R u+w /usr/local/bundle/cache
 
       - name: Build gem
         run: |
