@@ -63,6 +63,9 @@ jobs:
             bundle install
             bundle exec rake edge:update
 
+      - name: Test git command
+        run: git status
+      
       - name: Capture modified gemfiles
         run: |
           git status --porcelain | grep '^ M gemfiles/' | awk '{print $2}' > modified_files.txt
