@@ -49,6 +49,7 @@ jobs:
               #   version: '9.2'
     container:
       image: "ghcr.io/datadog/images-rb/engines/${{ matrix.engine.name }}:${{ matrix.engine.version }}"
+      options: --user 1001
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
