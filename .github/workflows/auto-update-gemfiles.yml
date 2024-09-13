@@ -55,13 +55,6 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history to access all branches
 
-        
-      - name: Capture initial state
-        run: |
-          echo ${{ github.workspace }}
-          echo $GITHUB_WORKSPACE
-          git diff --name-only HEAD > before_update.txt
-
       - name: Output Ruby version
         run: ruby -v
       
