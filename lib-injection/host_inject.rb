@@ -195,7 +195,7 @@ else
             next
           end
 
-          bundle_add_cmd = "bundle add #{gem} --skip-install --version #{gem_version_mapping[gem]} "
+          bundle_add_cmd = "bundle _#{Bundler::VERSION}_ add #{gem} --skip-install --version #{gem_version_mapping[gem]} "
           bundle_add_cmd << ' --verbose ' if ENV['DD_TRACE_DEBUG'] == 'true'
           bundle_add_cmd << '--require datadog/auto_instrument' if gem == 'datadog'
 
